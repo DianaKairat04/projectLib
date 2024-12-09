@@ -1,3 +1,76 @@
+<?php
+session_start();
+include 'db.php';  // Деректер базасына қосылу
+
+// Егер пайдаланушы жүйеге кірмеген болса, кіру бетіне бағыттау
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Егер форма жіберілсе
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $title = trim($_POST['title']);
+    $author = trim($_POST['author']);
+    $genre = trim($_POST['genre']);
+    $description = trim($_POST['description']);
+    $user_id = $_SESSION['user_id'];
+
+    // Файлдарды жүктеу папкасы
+    $upload_dir = 'uploads/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $image_path = $_FILES['image_path']['name'];
+    $file_path = $_FILES['file_path']['name'];
+
+    $image_tmp = $_FILES['image_path']['tmp_name'];
+    $file_tmp = $_FILES['file_path']['tmp_name'];
+
+    // Файл кеңейтімдерін тексеру
+    $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $allowed_file_extensions = ['pdf'];
+    $image_ext = pathinfo($image_path, PATHINFO_EXTENSION);
+    $file_ext = pathinfo($file_path, PATHINFO_EXTENSION);
+
+    // Қате тексерулер
+    if (!in_array($image_ext, $allowed_image_extensions)) {
+        $_SESSION['error_message'] = "Тек сурет (jpg, jpeg, png, gif) форматтарын жүктеуге болады.";
+    } elseif (!in_array($file_ext, $allowed_file_extensions)) {
+        $_SESSION['error_message'] = "Тек PDF файлдарын жүктеуге болады.";
+    } else {
+        // Файл аттарын қайта атау
+        $image_new_name = uniqid() . '.' . $image_ext;
+        $file_new_name = uniqid() . '.' . $file_ext;
+
+        // Файлдарды жүктеу
+        if (move_uploaded_file($image_tmp, $upload_dir . $image_new_name) &&
+            move_uploaded_file($file_tmp, $upload_dir . $file_new_name)) {
+
+            // Деректер базасына жазу
+            $query = "INSERT INTO books (title, author, genre, description, image_path, file_path, user_id) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ssssssi", $title, $author, $genre, $description, $image_new_name, $file_new_name, $user_id);
+
+            if ($stmt->execute()) {
+                $_SESSION['success_message'] = "Кітап сәтті қосылды!";
+                header("Location: profile.php");
+                exit;
+            } else {
+                $_SESSION['error_message'] = "Қате: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            $_SESSION['error_message'] = "Файлдарды жүктеу кезінде қате орын алды.";
+        }
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
