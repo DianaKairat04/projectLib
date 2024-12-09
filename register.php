@@ -1,3 +1,31 @@
+<?php
+session_start();
+include 'db.php'; // Деректер базасына қосылу
+
+// Тіркеу процесі
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    // Құпиясөзді хештеу
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Қолданушыны деректер базасына қосу
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    if ($stmt->execute()) {
+        $_SESSION['username'] = $username;  // Сессияда қолданушының атын сақтау
+        header('Location: login.php');  // Тіркелгеннен кейін кіру бетіне бағыттау
+        exit();
+    } else {
+        $error_message = "Қате орын алды!";
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
