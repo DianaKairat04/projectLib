@@ -180,6 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-bottom: 15px;
             font-size: 1em;
         }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
@@ -195,11 +202,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="form-container">
         <h2>Кітап қосу</h2>
 
+        <!-- Қате немесе сәтті хабарламаны көрсету -->
         <?php if (isset($_SESSION['error_message'])): ?>
-            <div class="error-message">
-                <?= htmlspecialchars($_SESSION['error_message']) ?>
-            </div>
-            <?php unset($_SESSION['error_message']); ?>
+            <div class="error-message"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="success-message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
         <?php endif; ?>
 
         <form action="" method="POST" enctype="multipart/form-data">

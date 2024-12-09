@@ -125,7 +125,8 @@
     <header>
         <div class="logo">Онлайн кітапхана</div>
         <nav>
-            <a href="index.php">Басты бет</a>
+            <a href="profile.php">Басты бет</a>
+            <a href="kitaptar.php">Кітаптар</a>
             <a href="add_book.php">Кітаптар қосу</a>
             <a href="saved_books.php">Менің кітаптарым</a>
             <a href="user_profile.php">Профиль</a>
