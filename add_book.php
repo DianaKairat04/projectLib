@@ -35,37 +35,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image_ext = pathinfo($image_path, PATHINFO_EXTENSION);
     $file_ext = pathinfo($file_path, PATHINFO_EXTENSION);
 
-    // Қате тексерулер
+    // Файлдардың өлшемдерін тексеру
+    $max_image_size = 5 * 1024 * 1024; // 5MB
+    $max_file_size = 10 * 1024 * 1024; // 10MB
+
+    // Сурет файлының өлшемін тексеру
+    if ($_FILES['image_path']['size'] > $max_image_size) {
+        $_SESSION['error_message'] = "Сурет файлының өлшемі 5MB-тан аспауы керек.";
+        header("Location: add_book.php");
+        exit;
+    }
+
+    // PDF файлының өлшемін тексеру
+    if ($_FILES['file_path']['size'] > $max_file_size) {
+        $_SESSION['error_message'] = "PDF файлының өлшемі 10MB-тан аспауы керек.";
+        header("Location: add_book.php");
+        exit;
+    }
+
+    // Файл кеңейтімдерін тексеру
     if (!in_array($image_ext, $allowed_image_extensions)) {
         $_SESSION['error_message'] = "Тек сурет (jpg, jpeg, png, gif) форматтарын жүктеуге болады.";
-    } elseif (!in_array($file_ext, $allowed_file_extensions)) {
+        header("Location: add_book.php");
+        exit;
+    }
+
+    if (!in_array($file_ext, $allowed_file_extensions)) {
         $_SESSION['error_message'] = "Тек PDF файлдарын жүктеуге болады.";
-    } else {
-        // Файл аттарын қайта атау (қайталануды болдырмау үшін)
-        $image_new_name = uniqid() . '.' . $image_ext;
-        $file_new_name = uniqid() . '.' . $file_ext;
+        header("Location: add_book.php");
+        exit;
+    }
 
-        // Файлдарды жүктеу
-        if (move_uploaded_file($image_tmp, $upload_dir . $image_new_name) && move_uploaded_file($file_tmp, $upload_dir . $file_new_name)) {
-            // Деректер базасына жазу
-            $query = "INSERT INTO books (title, author, genre, description, image_path, file_path, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ssssssi", $title, $author, $genre, $description, $image_new_name, $file_new_name, $user_id);
+    // Файл аттарын қайта атау (қайталануды болдырмау үшін)
+    $image_new_name = uniqid() . '.' . $image_ext;
+    $file_new_name = uniqid() . '.' . $file_ext;
 
-            if ($stmt->execute()) {
-                $_SESSION['success_message'] = "Кітап сәтті қосылды!";
-                header("Location: profile.php"); // Пайдаланушының профиліне бағыттау
-                exit;
-            } else {
-                $_SESSION['error_message'] = "Қате: " . $stmt->error;
-            }
-            $stmt->close();
+    // Файлдарды жүктеу
+    if (move_uploaded_file($image_tmp, $upload_dir . $image_new_name) && move_uploaded_file($file_tmp, $upload_dir . $file_new_name)) {
+        // Деректер базасына жазу
+        $query = "INSERT INTO books (title, author, genre, description, image_path, file_path, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ssssssi", $title, $author, $genre, $description, $image_new_name, $file_new_name, $user_id);
+
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Кітап сәтті қосылды!";
+            header("Location: profile.php"); // Пайдаланушының профиліне бағыттау
+            exit;
         } else {
-            $_SESSION['error_message'] = "Файлдарды жүктеу кезінде қате орын алды.";
+            $_SESSION['error_message'] = "Қате: " . $stmt->error;
         }
+        $stmt->close();
+    } else {
+        $_SESSION['error_message'] = "Файлдарды жүктеу кезінде қате орын алды.";
+        header("Location: add_book.php");
+        exit;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -73,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кітап қосу</title>
     <style>
-        /* Жалпы стильдер */
         body {
             font-family: 'Georgia', serif;
             margin: 0;
@@ -82,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #4a4a4a;
         }
 
-        /* Header стильдері */
         header {
             display: flex;
             justify-content: space-between;
@@ -113,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-decoration: underline;
         }
 
-        /* Форма контейнері */
         .form-container {
             background-color: #fff;
             padding: 30px;
@@ -193,16 +217,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <header>
         <div class="logo">Онлайн кітапхана</div>
         <nav>
-            <a href="index.php">Басты бет</a>
-            <a href="profile.php">Профиль</a>
-            <a href="logout.php">Шығу</a>
+            <a href="profile.php">Басты бет</a>
+            <a href="kitaptar.php">Кітаптар</a>
+            <a href="saved_books.php">Менің кітаптарым</a>
+            <a href="user_profile.php">Профиль</a>
         </nav>
     </header>
 
     <div class="form-container">
         <h2>Кітап қосу</h2>
 
-        <!-- Қате немесе сәтті хабарламаны көрсету -->
         <?php if (isset($_SESSION['error_message'])): ?>
             <div class="error-message"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
         <?php endif; ?>
@@ -232,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </select>
 
             <label>Сипаттама:</label>
-            <textarea name="description" rows="4"></textarea>
+            <textarea name="description" rows="4" required></textarea>
 
             <label>Сурет:</label>
             <input type="file" name="image_path" required>
