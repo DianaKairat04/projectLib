@@ -66,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -74,67 +73,130 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кітап қосу</title>
     <style>
+        /* Жалпы стильдер */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Georgia', serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #fafafa;
+            color: #4a4a4a;
         }
+
+        /* Header стильдері */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: #fff8f3;
+            color: #5a3b22;
+            border-bottom: 2px solid #e3ddd5;
+        }
+
+        header .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #5a3b22;
+            font-size: 1em;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Форма контейнері */
         .form-container {
-            background: #fff;
-            padding: 20px;
+            background-color: #fff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
+            margin: 50px auto;
         }
+
         h2 {
             text-align: center;
+            color: #a5673f;
+            font-size: 2em;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
         }
+
         input, textarea, select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 1em;
         }
+
         button {
             width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 12px;
+            background-color: #a5673f;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 1.1em;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color: #81492d;
         }
+
         .back-button {
             margin-top: 10px;
             text-align: center;
         }
+
         .back-button a {
             color: #007BFF;
             text-decoration: none;
         }
+
+        .back-button a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <div class="logo">Онлайн кітапхана</div>
+        <nav>
+            <a href="index.php">Басты бет</a>
+            <a href="profile.php">Профиль</a>
+            <a href="logout.php">Шығу</a>
+        </nav>
+    </header>
+
     <div class="form-container">
         <h2>Кітап қосу</h2>
 
         <?php if (isset($_SESSION['error_message'])): ?>
-            <div style="color: red; text-align: center;">
+            <div class="error-message">
                 <?= htmlspecialchars($_SESSION['error_message']) ?>
             </div>
             <?php unset($_SESSION['error_message']); ?>

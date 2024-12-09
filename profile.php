@@ -9,8 +9,8 @@
         body {
             margin: 0;
             font-family: 'Georgia', serif;
-            background-color: #f8f8f8;
-            color: #333;
+            background-color: #fafafa;
+            color: #4a4a4a;
         }
 
         /* Header стильдері */
@@ -19,15 +19,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 50px;
-            background-color: #007BFF;
-            color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff8f3;
+            color: #5a3b22;
+            border-bottom: 2px solid #e3ddd5;
         }
 
         header .logo {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
-            color: white;
         }
 
         nav {
@@ -37,7 +36,7 @@
 
         nav a {
             text-decoration: none;
-            color: white;
+            color: #5a3b22;
             font-size: 1em;
         }
 
@@ -113,7 +112,7 @@
 
         /* Footer стильдері */
         footer {
-            background-color: #333;
+            background-color: #5a3b22;
             color: white;
             text-align: center;
             padding: 20px 0;
@@ -126,10 +125,10 @@
     <header>
         <div class="logo">Онлайн кітапхана</div>
         <nav>
-            <a href="#hero">Басты бет</a>
-            <a href="#advantages">Артықшылықтар</a>
-            <a href="#reviews">Пікірлер</a>
-            <a href="#contacts">Байланыс</a>
+            <a href="index.php">Басты бет</a>
+            <a href="add_book.php">Кітаптар қосу</a>
+            <a href="saved_books.php">Менің кітаптарым</a>
+            <a href="user_profile.php">Профиль</a>
         </nav>
     </header>
 
