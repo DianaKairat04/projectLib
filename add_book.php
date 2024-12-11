@@ -11,6 +11,7 @@ include 'db.php'; // Деректер базасына қосылу
 
 // Егер форма жіберілген болса
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Пайдаланушының енгізген мәліметтерін алу
     $title = trim($_POST['title']);
     $author = trim($_POST['author']);
     $genre = trim($_POST['genre']);
@@ -23,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mkdir($upload_dir, 0777, true);
     }
 
+    // Файлдарды алу
     $image_path = $_FILES['image_path']['name']; // Сурет файлы
     $file_path = $_FILES['file_path']['name'];   // PDF файл
 
@@ -66,9 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Файл аттарын қайта атау (қайталануды болдырмау үшін)
-    $image_new_name = uniqid() . '.' . $image_ext;
-    $file_new_name = uniqid() . '.' . $file_ext;
+    // Файл аттарын қайта атау (қазақ тілінде кітап атауы мен авторды пайдалану)
+    // Кітап атауын және авторды біріктіріп файл атын жасау
+    $file_base_name = preg_replace("/[^a-zA-Z0-9А-Яа-я\s\.]/u", '', $title . ' - ' . $author); // Ағылшын және кириллица символдары
+    $image_new_name = $file_base_name . '.' . $image_ext;
+    $file_new_name = $file_base_name . '.' . $file_ext;
 
     // Файлдарды жүктеу
     if (move_uploaded_file($image_tmp, $upload_dir . $image_new_name) && move_uploaded_file($file_tmp, $upload_dir . $file_new_name)) {
@@ -92,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="kk">
