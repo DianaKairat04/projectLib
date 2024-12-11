@@ -1,216 +1,132 @@
 <?php
 session_start();
-include 'db.php';  // Деректер базасына қосылу
+include 'db.php'; // Деректер базасына қосылу
 
-// Кітаптарды іздеу функциясы
-$search = '';
-$search_query = '';
-if (isset($_GET['search'])) {
-    $search = trim($_GET['search']);
-    if ($search != '') {
-        // Іздеу сұранысы кітап атауы мен авторына қатысты
-        $search_query = " AND (title LIKE ? OR author LIKE ?)";
-    }
+// Егер пайдаланушы жүйеге кірмеген болса, кіру бетіне қайта бағыттау
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
 }
 
-// Кітаптар тізімін алу
-$query = "SELECT * FROM books WHERE 1" . $search_query . " ORDER BY created_at DESC";
-$stmt = $conn->prepare($query);
-
-if ($search) {
-    $search_term = "%" . $search . "%";
-    $stmt->bind_param("ss", $search_term, $search_term);
-}
-
-$stmt->execute();
-$result = $stmt->get_result();
+// Кітаптар тізімін деректер базасынан алу
+$query = "SELECT id, title, author, genre, file_path FROM books ORDER BY title";
+$result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кітаптар</title>
+    <title>Кітаптар тізімі</title>
     <style>
         body {
             font-family: 'Georgia', serif;
             background-color: #fafafa;
-            color: #4a4a4a;
             margin: 0;
             padding: 0;
         }
-
         header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 20px 50px;
             background-color: #fff8f3;
             color: #5a3b22;
-            border-bottom: 2px solid #e3ddd5;
         }
-
         header .logo {
             font-size: 1.8em;
             font-weight: bold;
         }
-
         nav a {
             text-decoration: none;
             color: #5a3b22;
             font-size: 1em;
-            margin-left: 20px;
         }
-
         nav a:hover {
             text-decoration: underline;
         }
-
-        .container {
-            padding: 40px 60px;
-            max-width: 1200px;
-            margin: auto;
+        .section-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
         }
-
-        .search-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .search-bar input {
-            width: 80%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .search-bar button {
-            padding: 10px 20px;
-            background-color: #5a3b22;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .search-bar button:hover {
-            background-color: #3e2a19;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff8f3;
-            border: 2px solid #e3ddd5;
         }
-
-        table th, table td {
-            padding: 15px;
+        th, td {
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #e3ddd5;
+            border: 1px solid #ddd;
         }
-
-        table th {
-            background-color: #5a3b22;
+        th {
+            background-color: #007BFF;
             color: white;
-            font-size: 1em;
         }
-
-        table td a {
-            color: #5a3b22;
-            font-weight: bold;
+        tr:hover {
+            background-color: #f1f1f1;
         }
-
-        table td a:hover {
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
             text-decoration: underline;
-        }
-
-        .book-cover {
-            width: 80px;
-            height: auto;
-            display: block;
-            border-radius: 5px;
-        }
-
-        footer {
-            background-color: #5a3b22;
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
     <div class="logo">Онлайн кітапхана</div>
     <nav>
-        <a href="index.php">Басты бет</a>
-        <a href="books.php">Кітаптар</a>
-        <a href="about.php">Біз туралы</a>
-        <a href="register.php">Тіркелу</a>
-        <a href="login.php">Кіру</a>
+            <a href="profile.php">Басты бет</a>
+            <a href="book_list.php">Кітаптар</a>
+            <a href="add_book.php">Кітаптар қосу</a>
+            <a href="saved_books.php">Менің кітаптарым</a>
+            <a href="user_profile.php">Профиль</a>
     </nav>
 </header>
 
-<!-- Main Content -->
-<div class="container">
+<section class="section-container">
     <h1>Кітаптар тізімі</h1>
-    <p>Қазақ және әлем әдебиетінің үздік туындыларын тегін жүктеп, оқыңыздар.</p>
 
-    <!-- Search Bar -->
-    <div class="search-bar">
-        <form action="books.php" method="GET">
-            <input type="text" name="search" placeholder="Кітап атауы немесе авторы" value="<?= htmlspecialchars($search); ?>">
-            <button type="submit">Іздеу</button>
-        </form>
-    </div>
-
-    <!-- Books Table -->
     <table>
         <thead>
             <tr>
-                <th>Сурет</th>
                 <th>Атауы</th>
                 <th>Автор</th>
                 <th>Жанр</th>
-                <th>Аннотация</th>
+                <th>Оқу/Жүктеу</th>
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($book = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($book['title']); ?></td>
+                        <td><?= htmlspecialchars($book['author']); ?></td>
+                        <td><?= htmlspecialchars($book['genre']); ?></td>
+                        <td>
+                            <a href="<?= htmlspecialchars($book['file_path']); ?>" target="_blank">Оқу</a> |
+                            <a href="download.php?file=<?= urlencode($book['file_path']); ?>" download>Жүктеу</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
                 <tr>
-                    <td>
-                        <img src="<?= htmlspecialchars($row['image_path']); ?>" alt="<?= htmlspecialchars($row['title']); ?>" class="book-cover">
-                    </td>
-                    <td>
-                        <a href="read_book.php?id=<?= $row['id']; ?>"><?= htmlspecialchars($row['title']); ?></a>
-                    </td>
-                    <td><?= htmlspecialchars($row['author']); ?></td>
-                    <td><?= htmlspecialchars($row['genre']); ?></td>
-                    <td><?= htmlspecialchars($row['description']); ?></td>
-                </tr>
-            <?php endwhile; ?>
-            <?php if ($result->num_rows === 0): ?>
-                <tr>
-                    <td colspan="5">Кітап табылмады!</td>
+                    <td colspan="4" style="text-align:center;">Кітаптар табылмады.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
-</div>
-
-<!-- Footer -->
-<footer>
-    <p>&copy; 2024 Онлайн кітапхана. Барлық құқықтар қорғалған.</p>
-</footer>
+</section>
 
 </body>
 </html>
+
+<?php
+$conn->close();
+?>
