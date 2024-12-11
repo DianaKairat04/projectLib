@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php'; // Деректер базасына қосылу
+include 'db.php';  // Деректер базасына қосылу
 
 // Егер пайдаланушы жүйеге кірмеген болса, кіру бетіне бағыттау
 if (!isset($_SESSION['user_id'])) {
@@ -11,36 +11,22 @@ if (!isset($_SESSION['user_id'])) {
 // Кітаптың ID-ін алу
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
+    $user_id = $_SESSION['user_id'];  // Қолданушының ID-сі
 
-    // Кітаптың жолын деректер базасынан алу
-    $query = "SELECT file_path, title FROM books WHERE id = ?";
+    // Кітапты сақтау (saved_books) кестесіне қосу
+    $query = "INSERT INTO saved_books (user_id, book_id) VALUES (?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($file_path, $title);
-
-    if ($stmt->num_rows > 0) {
-        $stmt->fetch();
-        // Файлдың бар-жоғын тексеру
-        if (!file_exists($file_path)) {
-            echo "Кітап файлы серверде жоқ.";
-            exit;
-        }
+    $stmt->bind_param("ii", $user_id, $id);
+    if ($stmt->execute()) {
+        $_SESSION['success_message'] = "Кітап сәтті сақталды!";
     } else {
-        echo "Кітап табылмады.";
-        exit;
+        $_SESSION['error_message'] = "Қате: Кітапты сақтау мүмкін болмады.";
     }
     $stmt->close();
 } else {
-    echo "Кітап идентификаторы жоқ.";
-    exit;
+    $_SESSION['error_message'] = "Кітап идентификаторы жоқ.";
 }
 
-// PDF файлын көрсету
-header('Content-Type: application/pdf');
-header('Content-Disposition: inline; filename="' . basename($file_path) . '"');
-readfile($file_path);
-
-$conn->close();
+header("Location: book_list.php");  // Кітаптар тізіміне қайта бағыттау
+exit;
 ?>
