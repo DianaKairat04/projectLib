@@ -1,86 +1,69 @@
 <?php
 session_start();
-include 'db.php'; // Деректер базасымен байланыс
+include 'db.php'; // Деректер базасына қосылу
 
-// URL арқылы жіберілген кітаптың ID-ін алу
-$book_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-// Кітапты деректер базасынан іздеу
-$query = "SELECT * FROM books WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $book_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$book = $result->fetch_assoc();
-
-// Егер кітап табылмаса, қате хабарламасын көрсету
-if (!$book) {
-    echo "<h1>Кітап табылмады!</h1>";
+// Егер пайдаланушы жүйеге кірмеген болса, кіру бетіне бағыттау
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
 
-// Кітап файл жолы
-$file_path = $book['file_path'];
+// Кітаптың ID-ін алу
+if (isset($_GET['book_id'])) {
+    $book_id = (int)$_GET['book_id'];
+
+    // Кітаптың жолын деректер базасынан алу
+    $query = "SELECT file_path, title FROM books WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $book_id);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($file_path, $title);
+
+    if ($stmt->num_rows > 0) {
+        $stmt->fetch();
+    } else {
+        // Егер кітап табылмаса, қате көрсету
+        echo "Кітап табылмады.";
+        exit;
+    }
+    $stmt->close();
+} else {
+    echo "Кітап идентификаторы жоқ.";
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($book['title']); ?> - Оқу</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        header {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-        .container {
-            padding: 20px;
-        }
-        iframe {
-            width: 100%;
-            height: 90vh;
-            border: none;
-        }
-        .back-btn {
-            display: block;
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f44336;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            max-width: 200px;
-            margin: 15px auto;
-        }
-        .back-btn:hover {
-            background-color: #d32f2f;
-        }
-    </style>
+    <title>Кітапты оқу - <?= htmlspecialchars($title); ?></title>
 </head>
 <body>
     <header>
-        <h1>Кітап оқу: <?= htmlspecialchars($book['title']); ?></h1>
+        <div class="logo">Онлайн кітапхана</div>
+        <nav>
+            <a href="index.php">Басты бет</a>
+            <a href="profile.php">Профиль</a>
+            <a href="logout.php">Шығу</a>
+        </nav>
     </header>
-    <div class="container">
-        <!-- Артқа қайту батырмасы -->
-        <a href="books.php" class="back-btn">Артқа қайту</a>
 
-        <!-- Кітапты көрсету -->
-        <?php if ($file_path && pathinfo($file_path, PATHINFO_EXTENSION) === 'pdf'): ?>
-            <iframe src="<?= htmlspecialchars($file_path); ?>"></iframe>
-        <?php else: ?>
-            <p>Бұл кітапты сайт ішінде оқу мүмкін емес. Жүктеп алып оқыңыз.</p>
-            <a href="<?= htmlspecialchars($file_path); ?>" download>Кітапты жүктеу</a>
-        <?php endif; ?>
-    </div>
+    <section class="section-container">
+        <h1>Кітапты оқу: <?= htmlspecialchars($title); ?></h1>
+
+        <embed src="<?= htmlspecialchars($file_path); ?>" width="100%" height="600px" type="application/pdf">
+
+        <div class="back-button">
+            <a href="book_list.php">Артқа</a>
+        </div>
+    </section>
+
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

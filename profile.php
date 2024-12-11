@@ -125,8 +125,8 @@
     <header>
         <div class="logo">Онлайн кітапхана</div>
         <nav>
-            <a href="profile.php">Басты бет</a>
-            <a href="kitaptar.php">Кітаптар</a>
+            <a href="index.php">Басты бет</a>
+            <a href="book_list.php">Кітаптар</a>
             <a href="add_book.php">Кітаптар қосу</a>
             <a href="saved_books.php">Менің кітаптарым</a>
             <a href="user_profile.php">Профиль</a>
@@ -138,7 +138,7 @@
         <div class="hero-content">
             <h1>Кітап әлеміне қош келдіңіз!</h1>
             <p>Мыңдаған кітаптарды оңай басқарып, оларға пікір қалдырыңыз.</p>
-            <a href="#advantages" class="btn">Толығырақ</a>
+            <a href="hello.php" class="btn">Толығырақ</a>
         </div>
         <div class="hero-image">
             <img src="library-image.png" alt="Books and tablet">
@@ -150,7 +150,7 @@
         <div class="hero-content">
             <h1>Біздің артықшылықтарымыз</h1>
             <p>Онлайн кітапханамыз сізге кітаптарды қосуға, өшіруге және оларға баға беруге мүмкіндік береді. Сондай-ақ, пікірлер қалдыруға болады!</p>
-            <a href="#reviews" class="btn">Пікірлерді оқу</a>
+            <a href="advantages.php" class="btn">Пікірлерді оқу</a>
         </div>
         <div class="hero-image">
             <img src="advantages-image.png" alt="Advantages of Library">
@@ -162,7 +162,7 @@
         <div class="hero-content">
             <h1>Пайдаланушылар пікірі</h1>
             <p>Біздің оқырмандарымыз кітапхана жайлы тек жылы сөздер қалдырады. Барлық пікірлерді қарап шығыңыз және өз пікіріңізді қалдырыңыз!</p>
-            <a href="#contacts" class="btn">Бізбен байланысу</a>
+            <a href="comment.php" class="btn">Бізбен байланысу</a>
         </div>
         <div class="hero-image">
             <img src="reviews-image.png" alt="Reviews and Feedback">
