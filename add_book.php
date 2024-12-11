@@ -70,16 +70,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Файл аттарын қайта атау (қазақ тілінде кітап атауы мен авторды пайдалану)
     // Кітап атауын және авторды біріктіріп файл атын жасау
-    $file_base_name = preg_replace("/[^a-zA-Z0-9А-Яа-я\s\.]/u", '', $title . ' - ' . $author); // Ағылшын және кириллица символдары
+    $file_base_name = preg_replace("/[^a-zA-Z0-9А-Яа-я\s\.]/u", '', $title . '.' . $author); // Ағылшын және кириллица символдары
     $image_new_name = $file_base_name . '.' . $image_ext;
     $file_new_name = $file_base_name . '.' . $file_ext;
 
     // Файлдарды жүктеу
     if (move_uploaded_file($image_tmp, $upload_dir . $image_new_name) && move_uploaded_file($file_tmp, $upload_dir . $file_new_name)) {
         // Деректер базасына жазу
+        // Мұнда файл жолын толық сақтаймыз: 'uploads/filename'
+        $image_full_path = $upload_dir . $image_new_name;
+        $file_full_path = $upload_dir . $file_new_name;
+
         $query = "INSERT INTO books (title, author, genre, description, image_path, file_path, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("ssssssi", $title, $author, $genre, $description, $image_new_name, $file_new_name, $user_id);
+        $stmt->bind_param("ssssssi", $title, $author, $genre, $description, $image_full_path, $file_full_path, $user_id);
 
         if ($stmt->execute()) {
             $_SESSION['success_message'] = "Кітап сәтті қосылды!";
@@ -96,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 
 <!DOCTYPE html>

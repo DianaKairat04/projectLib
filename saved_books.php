@@ -140,10 +140,12 @@ $result = $stmt->get_result();
 <body>
     <header>
         <div class="logo">Онлайн кітапхана</div>
-        <nav>
+        <<nav>
             <a href="index.php">Басты бет</a>
-            <a href="profile.php">Профиль</a>
-            <a href="logout.php">Шығу</a>
+            <a href="book_list.php">Кітаптар</a>
+            <a href="add_book.php">Кітаптар қосу</a>
+            <a href="saved_books.php">Менің кітаптарым</a>
+            <a href="user_profile.php">Профиль</a>
         </nav>
     </header>
 

@@ -131,13 +131,13 @@ $result = $stmt->get_result();
 <body>
 <header>
     <div class="logo">Онлайн кітапхана</div>
-    <nav>
-        <a href="index.php">Басты бет</a>
-        <a href="books.php">Кітаптар</a>
-        <a href="about.php">Біз туралы</a>
-        <a href="register.php">Тіркелу</a>
-        <a href="login.php">Кіру</a>
-    </nav>
+   <nav>
+            <a href="index.php">Басты бет</a>
+            <a href="book_list.php">Кітаптар</a>
+            <a href="add_book.php">Кітаптар қосу</a>
+            <a href="saved_books.php">Менің кітаптарым</a>
+            <a href="user_profile.php">Профиль</a>
+        </nav>
 </header>
 
 <div class="container">
@@ -169,7 +169,7 @@ $result = $stmt->get_result();
                 <td><?= htmlspecialchars($row['description']); ?></td>
                 <td>
                     <a href="read_book.php?id=<?= $row['id']; ?>">Оқу</a> |
-                    <a href="download_book.php?id=<?= $row['id']; ?>">Жүктеу</a> |
+                    <a href="download.php?id=<?= $row['id']; ?>">Жүктеу</a> |
                     <a href="save_book.php?id=<?= $row['id']; ?>">Сақтау</a>
                 </td>
             </tr>
