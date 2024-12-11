@@ -141,7 +141,7 @@
             <a href="#reviews" class="btn">Толығырақ</a>
         </div>
         <div class="hero-image">
-            <img src="library-image.png" alt="Books and tablet">
+            <img src="lib.jpeg" alt="Books and tablet">
         </div>
     </section>
 
@@ -153,7 +153,7 @@
             <a href="#reviews" class="btn">Пікірлерді оқу</a>
         </div>
         <div class="hero-image">
-            <img src="advantages-image.png" alt="Advantages of Library">
+            <img src="1.jpeg" alt="Advantages of Library">
         </div>
     </section>
 
@@ -165,7 +165,7 @@
             <a href="comment.php" class="btn">Пікір қалдыру</a>
         </div>
         <div class="hero-image">
-            <img src="reviews-image.png" alt="Reviews and Feedback">
+            <img src="2.jpeg" alt="Reviews and Feedback">
         </div>
     </section>
 
@@ -177,7 +177,7 @@
             <a href="mailto:contact@onlinelibrary.kz" class="btn">Бізге хат жазу</a>
         </div>
         <div class="hero-image">
-            <img src="contact-image.png" alt="Contact Us">
+            <img src="3.jpeg" alt="Contact Us">
         </div>
     </section>
 
